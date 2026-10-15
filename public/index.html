@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireframe Chat Widget SMA Muhammadiyah 1</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        muhi: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            accent: '#f59e0b', // Gold Accent
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar for Chat Container */
+        .chat-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .chat-scroll::-webkit-scrollbar-track {
+            background: rgba(241, 245, 249, 0.8);
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* Wireframe Lo-Fi Mode Styling Overrides */
+        .wireframe-mode .wf-element {
+            border: 2px dashed #334155 !important;
+            background-color: #f8fafc !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            box-shadow: none !important;
+        }
+        .wireframe-mode .wf-badge {
+            background-color: #0f172a !important;
+            color: #ffffff !important;
+            border: 1px solid #0f172a !important;
+        }
+        .wireframe-mode .wf-tag {
+            display: inline-block !important;
+        }
+        
+        .wf-tag {
+            display: none;
+        }
+
+        /* Animations */
+        @keyframes float-pulse {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-float {
+            animation: float-pulse 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header Navigation & Control Toolbar -->
+    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-500 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-star-and-crescent"></i>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight leading-tight flex items-center">
+                        Wireframe Chat Widget — SMA Muhammadiyah 1
+                    </h1>
+                    <p class="text-xs text-slate-400">Spec Komponen UI & Prototype Interaktif Layanan Informasi</p>
+                </div>
+            </div>
+
+            <!-- Toolbar Action Controls -->
+            <div class="flex items-center flex-wrap gap-2 text-xs sm:text-sm">
+                <!-- Mode Toggle (Hi-Fi vs Lo-Fi Wireframe) -->
+                <div class="bg-slate-800 p-1 rounded-xl flex items-center border border-slate-700">
+                    <button id="btn-mode-hifi" onclick="setMode('hifi')" class="px-3 py-1.5 rounded-lg font-semibold transition-all bg-emerald-600 text-white shadow">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Live UI (Hi-Fi)
+                    </button>
+                    <button id="btn-mode-lofi" onclick="setMode('lofi')" class="px-3 py-1.5 rounded-lg font-semibold transition-all text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-pen-ruler mr-1.5"></i> Wireframe (Lo-Fi)
+                    </button>
+                </div>
+
+                <!-- Toggle Annotation Labels -->
+                <button onclick="toggleAnnotations()" id="btn-annotation" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition flex items-center font-medium">
+                    <i class="fa-solid fa-tags mr-1.5 text-emerald-400"></i>
+                    <span id="label-annotation">Sembunyikan Label Bagian</span>
+                </button>
+
+                <!-- Reset Chat Simulation -->
+                <button onclick="resetChat()" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition flex items-center font-medium" title="Reset Percakapan">
+                    <i class="fa-solid fa-rotate-right mr-1.5 text-slate-400"></i> Reset
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
+
+        <!-- LEFT COLUMN: School Landing Page Preview -->
+        <main class="lg:col-span-7 xl:col-span-8 flex flex-col space-y-6">
+            
+            <!-- Contextual Browser Window Mockup -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[580px]">
+                
+                <!-- Browser Bar -->
+                <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex items-center space-x-2">
+                    <div class="flex space-x-1.5">
+                        <span class="w-3 h-3 rounded-full bg-red-400 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span>
+                    </div>
+                    <div class="flex-1 bg-white rounded-md px-3 py-1 text-xs text-slate-500 font-mono flex items-center justify-between border border-slate-200">
+                        <span class="truncate"><i class="fa-solid fa-lock text-emerald-600 mr-1.5"></i> https://smamuh1.sch.id</span>
+                        <i class="fa-solid fa-arrows-rotate text-slate-400"></i>
+                    </div>
+                </div>
+
+                <!-- School Hero Content -->
+                <div class="p-6 sm:p-8 space-y-6 bg-gradient-to-b from-emerald-50/50 via-white to-white flex-1">
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-6 py-2">
+                        <div class="space-y-3 text-center sm:text-left">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                <i class="fa-solid fa-bullhorn mr-1.5 text-emerald-600"></i> PPDB T.A 2026/2027 Telah Dibuka
+                            </span>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                                SMA Muhammadiyah 1
+                            </h2>
+                            <p class="text-slate-600 text-xs sm:text-sm max-w-lg leading-relaxed">
+                                Sekolah Penggerak Unggulan Berwawasan Islami, Berprestasi Akademik & Teknologi, serta Berkarakter Muhammadiyah. Dapatkan informasi PPDB, Beasiswa Tahfidz, dan SPP melalui widget chat di pojok kanan bawah.
+                            </p>
+                            
+                            <div class="pt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
+                                <button onclick="triggerSampleQuestion('PPDB')" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold shadow-sm transition">
+                                    <i class="fa-solid fa-paper-plane mr-1"></i> Tanya Syarat PPDB
+                                </button>
+                                <button onclick="triggerSampleQuestion('Tahfidz')" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold shadow-sm transition">
+                                    <i class="fa-solid fa-book-quran mr-1"></i> Program Tahfidz
+                                </button>
+                                <button onclick="triggerSampleQuestion('SPP')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition border border-slate-200">
+                                    Informasi SPP
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- School Emblem Frame -->
+                        <div class="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-gradient-to-br from-emerald-600 to-green-700 text-white flex flex-col items-center justify-center p-4 text-center shrink-0 shadow-lg relative overflow-hidden">
+                            <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+                            <i class="fa-solid fa-school text-5xl mb-2 text-amber-300"></i>
+                            <span class="text-xs font-extrabold tracking-wider uppercase">SMA MUHI</span>
+                            <span class="text-[10px] text-emerald-100">Islami & Unggul</span>
+                        </div>
+                    </div>
+
+                    <!-- Informational Highlights -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-100">
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-emerald-300 transition">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mb-2 font-bold">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <h3 class="font-bold text-xs text-slate-800">Akreditasi A & Unggulan</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">Fasilitas laboratorium sains, lab komputer modern, dan perpustakaan digital.</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-emerald-300 transition">
+                            <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center mb-2 font-bold">
+                                <i class="fa-solid fa-book-open"></i>
+                            </div>
+                            <h3 class="font-bold text-xs text-slate-800">Kelas Tahfidz & ICT</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">Bimbingan hafalan Al-Qur'an serta sertifikasi keahlian digital siswa.</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-emerald-300 transition">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center mb-2 font-bold">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <h3 class="font-bold text-xs text-slate-800">Ekskul Ortom & Olahraga</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">Hizbul Wathan (HW), Tapak Suci Putra Muhammadiyah, Robotik, dan PMR.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Card Footer Hint -->
+                <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
+                    <span class="flex items-center"><i class="fa-solid fa-arrow-turn-down-right text-emerald-600 mr-2"></i> Perhatikan widget chat di pojok kanan bawah.</span>
+                    <span class="font-mono text-[11px] text-slate-400">Spec v2.0 • SMA Muhammadiyah 1</span>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- RIGHT COLUMN: Component Anatomy Breakdown Sidebar -->
+        <aside class="lg:col-span-5 xl:col-span-4 flex flex-col space-y-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h2 class="font-bold text-slate-900 text-sm sm:text-base flex items-center">
+                        <i class="fa-solid fa-cubes text-emerald-600 mr-2"></i> Anatomy 4 Bagian Widget
+                    </h2>
+                    <span class="text-xs bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded border border-emerald-200">
+                        Spesifikasi
+                    </span>
+                </div>
+
+                <!-- Component Breakdown Cards -->
+                <div class="space-y-2.5 text-xs">
+                    
+                    <!-- Section 1 Breakdown -->
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition">
+                        <div class="flex items-center justify-between font-bold text-slate-800 mb-1">
+                            <span class="flex items-center text-emerald-700">
+                                <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 inline-flex items-center justify-center text-[10px] mr-1.5 font-bold">1</span>
+                                Tombol Mengambang
+                            </span>
+                            <span class="font-mono text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">Launcher</span>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed text-[11px]">
+                            Terletak di pojok kanan bawah. Memiliki indikator jumlah pesan (*unread badge*), efek animasi *float*, serta *tooltip* pemicu.
+                        </p>
+                    </div>
+
+                    <!-- Section 2 Breakdown -->
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition">
+                        <div class="flex items-center justify-between font-bold text-slate-800 mb-1">
+                            <span class="flex items-center text-emerald-700">
+                                <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 inline-flex items-center justify-center text-[10px] mr-1.5 font-bold">2</span>
+                                Header Judul
+                            </span>
+                            <span class="font-mono text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">Header Bar</span>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed text-[11px]">
+                            Menampilkan identitas **SMA Muhammadiyah 1**, avatar CS Humas, status keaktifan *Online*, tombol bersihkan percakapan, dan tombol tutup.
+                        </p>
+                    </div>
+
+                    <!-- Section 3 Breakdown -->
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition">
+                        <div class="flex items-center justify-between font-bold text-slate-800 mb-1">
+                            <span class="flex items-center text-emerald-700">
+                                <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 inline-flex items-center justify-center text-[10px] mr-1.5 font-bold">3</span>
+                                Area Percakapan
+                            </span>
+                            <span class="font-mono text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">Chat Body</span>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed text-[11px]">
+                            Wadah *bubble chat* biru/putih, timestamp, indikator mengetik (*bouncing dots*), serta *Quick Reply Chips* (PPDB, SPP, Tahfidz, Lokasi TU).
+                        </p>
+                    </div>
+
+                    <!-- Section 4 Breakdown -->
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition">
+                        <div class="flex items-center justify-between font-bold text-slate-800 mb-1">
+                            <span class="flex items-center text-emerald-700">
+                                <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 inline-flex items-center justify-center text-[10px] mr-1.5 font-bold">4</span>
+                                Kolom Input Pesan
+                            </span>
+                            <span class="font-mono text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">Input Footer</span>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed text-[11px]">
+                            Form masukan teks, tombol unggah lampiran berkas pendaftaran, emoji shortcut, dan tombol kirim dengan aksen warna utama hijau sekolah.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Design Tokens Summary -->
+                <div class="p-3 bg-emerald-950 text-emerald-100 rounded-xl space-y-2 border border-emerald-800 text-xs font-mono">
+                    <p class="font-bold text-emerald-300 flex items-center">
+                        <i class="fa-solid fa-palette mr-1.5"></i> Design Tokens SMA Muhi:
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-[10px]">
+                        <div>• Primary: <span class="text-emerald-400">#15803d</span></div>
+                        <div>• Header: <span class="text-emerald-400">#166534</span></div>
+                        <div>• Accent: <span class="text-amber-400">#f59e0b</span></div>
+                        <div>• Font: <span class="text-white">Plus Jakarta Sans</span></div>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- ================================================================= -->
+        <!-- FLOATING CHAT WIDGET CONTAINER (POSISI FIXED BOTTOM RIGHT) -->
+        <!-- ================================================================= -->
+        <div id="chat-widget-wrapper" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end max-w-[calc(100vw-2rem)]">
+
+            <!-- ------------------------------------------------------------- -->
+            <!-- POPUP CARD CHAT WIDGET -->
+            <!-- ------------------------------------------------------------- -->
+            <div id="chat-box" class="w-[360px] sm:w-[390px] h-[530px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden mb-3 transition-all duration-300 transform scale-100 origin-bottom-right wf-element">
+
+                <!-- --------------------------------------------------------- -->
+                <!-- BAGIAN 2: HEADER JUDUL (CHAT HEADER) -->
+                <!-- --------------------------------------------------------- -->
+                <div class="bg-gradient-to-r from-muhi-800 to-muhi-700 text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0 shadow-md relative wf-element">
+                    
+                    <!-- Annotation Label Tag -->
+                    <span class="wf-tag absolute top-1 right-12 bg-slate-900 text-amber-300 font-mono text-[9px] px-1.5 py-0.5 rounded border border-slate-700 z-20">
+                        BAGIAN 2: HEADER JUDUL
+                    </span>
+
+                    <div class="flex items-center space-x-3">
+                        <!-- CS / Bot Avatar -->
+                        <div class="relative">
+                            <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center font-bold text-white text-lg overflow-hidden shadow-inner">
+                                <i class="fa-solid fa-headset text-amber-300"></i>
+                            </div>
+                            <!-- Online Status Indicator -->
+                            <span class="w-3 h-3 bg-emerald-400 border-2 border-muhi-800 rounded-full absolute bottom-0 right-0" title="Online Service"></span>
+                        </div>
+
+                        <!-- School Title & Subtitle -->
+                        <div>
+                            <div class="flex items-center space-x-1.5">
+                                <h3 class="font-extrabold text-sm tracking-tight text-white leading-tight">Layanan SMA Muhammadiyah 1</h3>
+                            </div>
+                            <p class="text-[11px] text-emerald-100/90 flex items-center mt-0.5">
+                                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block mr-1.5 animate-pulse"></span>
+                                Humas & Bot Informasi PPDB
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Header Action Icons -->
+                    <div class="flex items-center space-x-1">
+                        <button onclick="clearChatMessages()" class="p-1.5 hover:bg-white/10 rounded-lg text-emerald-100 hover:text-white transition text-xs" title="Bersihkan Chat">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                        <button onclick="toggleChat()" class="p-1.5 hover:bg-white/10 rounded-lg text-emerald-100 hover:text-white transition text-sm" title="Tutup Chat">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- --------------------------------------------------------- -->
+                <!-- BAGIAN 3: AREA PERCAKAPAN (CONVERSATION BODY) -->
+                <!-- --------------------------------------------------------- -->
+                <div id="chat-messages" class="flex-1 p-3.5 sm:p-4 overflow-y-auto space-y-3 bg-slate-50 chat-scroll relative wf-element">
+                    
+                    <!-- Annotation Label Tag -->
+                    <div class="wf-tag sticky top-0 left-0 bg-slate-900 text-amber-300 font-mono text-[9px] px-2 py-0.5 rounded border border-slate-700 w-fit z-10 shadow">
+                        BAGIAN 3: AREA PERCAKAPAN
+                    </div>
+
+                    <!-- Date Badge -->
+                    <div class="text-center my-1.5">
+                        <span class="text-[10px] font-semibold bg-slate-200/80 text-slate-500 px-2.5 py-0.5 rounded-full font-mono">
+                            Hari Ini, <span id="current-time-header">13:45</span>
+                        </span>
+                    </div>
+
+                    <!-- Bot Welcome Message Bubble -->
+                    <div class="flex items-start space-x-2">
+                        <div class="w-7 h-7 rounded-full bg-emerald-700 text-amber-300 flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-sm font-bold">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="flex flex-col space-y-1 max-w-[84%]">
+                            <span class="text-[10px] font-semibold text-slate-500 ml-1">Bot Humas SMA Muhi</span>
+                            <!-- Incoming White Bubble with Top-Left Corner Tail -->
+                            <div class="p-3 bg-white text-slate-800 text-xs rounded-2xl rounded-tl-xs border border-slate-200 shadow-sm leading-relaxed">
+                                Assalamu'alaikum! Selamat datang di layanan informasi resmi <b>SMA Muhammadiyah 1</b>. Ada yang bisa kami bantu terkait pendaftaran siswa baru, SPP, atau program unggulan?
+                            </div>
+                            <span class="text-[9px] text-slate-400 font-mono ml-1">13:45</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Reply Chips Container -->
+                    <div id="quick-replies" class="pt-1 space-y-1.5">
+                        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider pl-1">Pertanyaan Cepat:</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button onclick="handleQuickReply('Bagaimana syarat pendaftaran PPDB SMA Muhi?')" class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-full text-xs transition text-left flex items-center shadow-2xs">
+                                <i class="fa-regular fa-file-lines mr-1.5 text-emerald-600"></i> Syarat PPDB
+                            </button>
+                            <button onclick="handleQuickReply('Berapa rincian biaya SPP & Uang Pangkal?')" class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-full text-xs transition text-left flex items-center shadow-2xs">
+                                <i class="fa-solid fa-calculator mr-1.5 text-emerald-600"></i> Biaya & SPP
+                            </button>
+                            <button onclick="handleQuickReply('Apa saja syarat Beasiswa Tahfidz?')" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-full text-xs transition text-left flex items-center shadow-2xs">
+                                <i class="fa-solid fa-book-quran mr-1.5 text-amber-600"></i> Kelas Tahfidz
+                            </button>
+                            <button onclick="handleQuickReply('Dimana alamat kantor TU & jam buka?')" class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-full text-xs transition text-left flex items-center shadow-2xs">
+                                <i class="fa-solid fa-location-dot mr-1.5 text-emerald-600"></i> Lokasi & Kontak
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Animated Typing Indicator (Hidden by default) -->
+                    <div id="typing-indicator" class="hidden flex items-start space-x-2 pt-1">
+                        <div class="w-7 h-7 rounded-full bg-emerald-700 text-amber-300 flex items-center justify-center text-xs shrink-0">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="p-3 bg-white rounded-2xl rounded-tl-xs border border-slate-200 shadow-sm flex items-center space-x-1">
+                            <span class="w-1.5 h-1.5 bg-emerald-600 rounded-full animate-bounce"></span>
+                            <span class="w-1.5 h-1.5 bg-emerald-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                            <span class="w-1.5 h-1.5 bg-emerald-600 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- --------------------------------------------------------- -->
+                <!-- BAGIAN 4: KOLOM INPUT PESAN (MESSAGE INPUT BAR) -->
+                <!-- --------------------------------------------------------- -->
+                <div class="p-3 bg-white border-t border-slate-200 shrink-0 relative wf-element">
+                    
+                    <!-- Annotation Label Tag -->
+                    <span class="wf-tag absolute -top-3 left-3 bg-slate-900 text-amber-300 font-mono text-[9px] px-1.5 py-0.5 rounded border border-slate-700 z-20">
+                        BAGIAN 4: KOLOM INPUT PESAN
+                    </span>
+
+                    <form id="chat-form" onsubmit="handleSendMessage(event)" class="flex items-center space-x-2">
+                        <!-- File Attachment Button -->
+                        <button type="button" onclick="triggerFileAttachment()" class="p-2 text-slate-400 hover:text-emerald-700 hover:bg-slate-100 rounded-full transition" title="Lampirkan Dokumen Syarat">
+                            <i class="fa-solid fa-paperclip text-sm"></i>
+                        </button>
+
+                        <!-- Message Input Field -->
+                        <div class="flex-1 relative">
+                            <input 
+                                type="text" 
+                                id="user-input" 
+                                placeholder="Ketik pertanyaan seputar SMA Muhi..." 
+                                autocomplete="off"
+                                class="w-full pl-3 pr-8 py-2 bg-slate-100 hover:bg-slate-100/80 focus:bg-white text-xs text-slate-800 rounded-xl border border-transparent focus:border-emerald-600 focus:outline-none transition"
+                            />
+                            <!-- Emoji Shortcut Icon -->
+                            <button type="button" onclick="insertEmoji('😊')" class="absolute right-2.5 top-2.5 text-slate-400 hover:text-amber-500 transition text-xs">
+                                <i class="fa-regular fa-face-smile"></i>
+                            </button>
+                        </div>
+
+                        <!-- Send Button -->
+                        <button 
+                            type="submit" 
+                            id="btn-send"
+                            class="w-9 h-9 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl flex items-center justify-center transition shadow-sm shrink-0 active:scale-95"
+                            title="Kirim Pesan"
+                        >
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </form>
+
+                    <!-- Footnote Security & Hours Badge -->
+                    <div class="mt-2 text-[10px] text-slate-400 text-center flex items-center justify-center space-x-1">
+                        <i class="fa-solid fa-shield-halved text-[9px] text-emerald-600"></i>
+                        <span>Layanan Otomatis Humas SMA Muhammadiyah 1</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ------------------------------------------------------------- -->
+            <!-- BAGIAN 1: TOMBOL MENGAMBANG (FLOATING LAUNCHER BUTTON) -->
+            <!-- ------------------------------------------------------------- -->
+            <div class="relative group flex items-center">
+                <!-- Tooltip Label for Launcher Button -->
+                <div id="launcher-tooltip" class="mr-3 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-xl shadow-lg hidden sm:flex items-center space-x-1.5 font-medium whitespace-nowrap animate-fade-in border border-slate-700">
+                    <i class="fa-solid fa-comment-dots text-emerald-400"></i>
+                    <span>Tanya CS SMA Muhi?</span>
+                    <i class="fa-solid fa-caret-right text-slate-900 absolute -right-1.5 top-2.5 text-sm"></i>
+                </div>
+
+                <!-- Floating Trigger Launcher Button -->
+                <button 
+                    onclick="toggleChat()" 
+                    id="launcher-btn"
+                    class="w-14 h-14 bg-gradient-to-tr from-emerald-700 to-green-600 hover:from-emerald-800 hover:to-green-700 text-white rounded-full shadow-2xl flex items-center justify-center text-xl transition-all duration-300 transform hover:scale-105 active:scale-95 relative animate-float wf-element border-2 border-emerald-400/30"
+                    aria-label="Buka Widget Chat SMA Muhammadiyah 1"
+                >
+                    <!-- Annotation Label Tag -->
+                    <span class="wf-tag absolute -top-6 right-0 bg-slate-900 text-amber-300 font-mono text-[9px] px-1.5 py-0.5 rounded border border-slate-700 whitespace-nowrap z-20">
+                        BAGIAN 1: TOMBOL MENGAMBANG
+                    </span>
+
+                    <!-- Icon Chat Open -->
+                    <i id="icon-chat-open" class="fa-solid fa-comments transition-all"></i>
+                    <!-- Icon Chat Close -->
+                    <i id="icon-chat-close" class="fa-solid fa-xmark hidden text-2xl transition-all"></i>
+
+                    <!-- Unread Badge Counter -->
+                    <span id="unread-badge" class="absolute -top-1 -right-1 bg-amber-500 text-slate-900 text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow wf-badge">
+                        1
+                    </span>
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let isChatOpen = true;
+        let currentMode = 'hifi';
+        let showAnnotations = true;
+
+        // Specialized Knowledge Base for SMA Muhammadiyah 1
+        const muhiKnowledge = {
+            syarat: "<b>Persyaratan PPDB SMA Muhammadiyah 1:</b><br>1. Fotokopi Ijazah / SKL SMP terlegalisir (2 lembar)<br>2. Fotokopi Kartu Keluarga & Akta Kelahiran<br>3. Pasfoto 3x4 latar biru (4 lembar)<br>4. Fotokopi Rapor Semester 1-5<br>5. Piagam Prestasi Akademik/Non-Akademik (jika ada).",
+            spp: "<b>Rincian Biaya & SPP SMA Muhi:</b><br>• Dana Pengembangan Bangunan: Rp 4.200.000,- (Dapat diangsur 3x)<br>• SPP Bulanan: Rp 420.000,- (Termasuk biaya lab & ekstrakurikuler Ortom)<br>• Seragam & Kit Siswa: Rp 950.000,-",
+            tahfidz: "<b>Program Unggulan Kelas Tahfidz:</b><br>• Target hafalan minimal 3 Juz selama masa studi.<br>• Beasiswa bebas SPP 100% untuk pendaftar dengan hafalan awal minimal 5 Juz.<br>• Bimbingan khusus Musyrif bersertifikat.",
+            ekskul: "<b>Ekstrakurikuler Wajib & Pilihan:</b><br>• Kepanduan Hizbul Wathan (HW)<br>• Seni Bela Diri Tapak Suci Putra Muhammadiyah<br>• Ikatan Remaja Muhammadiyah (IRM)<br>• Robotik, English Debate, Futsal, & Olympiad Club.",
+            lokasi: "<b>Alamat & Kontak Layanan TU:</b><br>📍 Kampus SMA Muhammadiyah 1.<br>⏰ Layanan Loket Humas: Senin - Jumat (07.30 - 15.00 WIB) & Sabtu (08.00 - 12.00 WIB).<br>📞 Hotline WhatsApp: 0812-3456-7890",
+            ppdb: "<b>Jadwal Gelombang PPDB 2026/2027:</b><br>• Gelombang I: 10 Januari - 30 Maret 2026<br>• Tes Seleksi & Observasi: 5 April 2026<br>• Pengumuman Hasil: 10 April 2026."
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateTimestamp();
+            renderChatState();
+        });
+
+        function updateTimestamp() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('current-time-header').textContent = `${hours}:${minutes}`;
+        }
+
+        // Toggle Open / Close Chat Widget
+        function toggleChat() {
+            isChatOpen = !isChatOpen;
+            renderChatState();
+        }
+
+        function renderChatState() {
+            const chatBox = document.getElementById('chat-box');
+            const iconOpen = document.getElementById('icon-chat-open');
+            const iconClose = document.getElementById('icon-chat-close');
+            const unreadBadge = document.getElementById('unread-badge');
+            const launcherTooltip = document.getElementById('launcher-tooltip');
+
+            if (isChatOpen) {
+                chatBox.classList.remove('scale-0', 'opacity-0', 'pointer-events-none');
+                chatBox.classList.add('scale-100', 'opacity-100');
+                iconOpen.classList.add('hidden');
+                iconClose.classList.remove('hidden');
+                unreadBadge.classList.add('hidden');
+                launcherTooltip.classList.add('hidden');
+            } else {
+                chatBox.classList.add('scale-0', 'opacity-0', 'pointer-events-none');
+                chatBox.classList.remove('scale-100', 'opacity-100');
+                iconOpen.classList.remove('hidden');
+                iconClose.classList.add('hidden');
+                launcherTooltip.classList.remove('hidden');
+            }
+        }
+
+        function handleSendMessage(e) {
+            e.preventDefault();
+            const inputEl = document.getElementById('user-input');
+            const text = inputEl.value.trim();
+
+            if (!text) return;
+
+            appendUserMessage(text);
+            inputEl.value = '';
+
+            processBotReply(text);
+            scrollToBottom();
+        }
+
+        function handleQuickReply(questionText) {
+            appendUserMessage(questionText);
+            
+            processBotReply(questionText);
+            scrollToBottom();
+        }
+
+        function triggerSampleQuestion(type) {
+            if (!isChatOpen) {
+                toggleChat();
+            }
+            if (type === 'PPDB') {
+                handleQuickReply('Bagaimana syarat pendaftaran PPDB SMA Muhi?');
+            } else if (type === 'Tahfidz') {
+                handleQuickReply('Apa saja syarat Beasiswa Tahfidz?');
+            } else if (type === 'SPP') {
+                handleQuickReply('Berapa rincian biaya SPP & Uang Pangkal?');
+            }
+        }
+
+        // Kirim pertanyaan ke backend Gemini. Jika API gagal, gunakan basis pengetahuan lokal.
+        async function processBotReply(questionText) {
+            showTypingIndicator(true);
+            try {
+                const response = await fetch('/tanya-ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pertanyaan: questionText })
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    throw new Error(data.error || 'Layanan AI sedang tidak tersedia.');
+                }
+                const answer = (data.jawaban || '').trim();
+                if (!answer) throw new Error('AI mengirim jawaban kosong.');
+                appendBotMessage(escapeHtml(answer).replace(/\\n/g, '<br>'));
+            } catch (error) {
+                console.error('Chat API:', error);
+                appendBotMessage(generateBotResponse(questionText) +
+                    '<br><br><span class="text-slate-500">(Jawaban otomatis lokal; layanan AI belum dapat dihubungi.)</span>');
+            } finally {
+                showTypingIndicator(false);
+                scrollToBottom();
+            }
+        }
+
+        // Bot Keyword Matching
+        function generateBotResponse(input) {
+            const lower = input.toLowerCase();
+            
+            if (lower.includes('syarat') || lower.includes('dokumen') || lower.includes('berkas')) {
+                return muhiKnowledge.syarat;
+            } else if (lower.includes('spp') || lower.includes('biaya') || lower.includes('uang') || lower.includes('bayar')) {
+                return muhiKnowledge.spp;
+            } else if (lower.includes('tahfidz') || lower.includes('beasiswa') || lower.includes('qur')) {
+                return muhiKnowledge.tahfidz;
+            } else if (lower.includes('ekskul') || lower.includes('hw') || lower.includes('tapak suci') || lower.includes('irm')) {
+                return muhiKnowledge.ekskul;
+            } else if (lower.includes('lokasi') || lower.includes('alamat') || lower.includes('kontak') || lower.includes('tu')) {
+                return muhiKnowledge.lokasi;
+            } else if (lower.includes('ppdb') || lower.includes('daftar') || lower.includes('jadwal')) {
+                return muhiKnowledge.ppdb;
+            } else {
+                return `Terima kasih. Pertanyaan Anda mengenai "<b>${escapeHtml(input)}</b>" telah dicatat dan diteruskan ke Tim Humas SMA Muhammadiyah 1. Petugas kami akan merespon segera.`;
+            }
+        }
+
+        function appendUserMessage(text) {
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            const msgHtml = `
+                <div class="flex items-start justify-end space-x-2 pt-1">
+                    <div class="flex flex-col items-end space-y-1 max-w-[84%]">
+                        <span class="text-[10px] font-semibold text-slate-400 mr-1">Anda (Calon Wali/Siswa)</span>
+                        <div class="p-3 bg-emerald-700 text-white text-xs rounded-2xl rounded-tr-xs shadow-sm leading-relaxed">
+                            ${escapeHtml(text)}
+                        </div>
+                        <div class="flex items-center space-x-1 mr-1">
+                            <span class="text-[9px] text-slate-400 font-mono">${timeStr}</span>
+                            <i class="fa-solid fa-check-double text-[9px] text-emerald-600"></i>
+                        </div>
+                    </div>
+                    <div class="w-7 h-7 rounded-full bg-slate-700 text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-sm">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+            `;
+
+            const typingEl = document.getElementById('typing-indicator');
+            typingEl.insertAdjacentHTML('beforebegin', msgHtml);
+        }
+
+        function appendBotMessage(htmlContent) {
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            const msgHtml = `
+                <div class="flex items-start space-x-2 pt-1">
+                    <div class="w-7 h-7 rounded-full bg-emerald-700 text-amber-300 flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-sm font-bold">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="flex flex-col space-y-1 max-w-[84%]">
+                        <span class="text-[10px] font-semibold text-slate-500 ml-1">Bot Humas SMA Muhi</span>
+                        <div class="p-3 bg-white text-slate-800 text-xs rounded-2xl rounded-tl-xs border border-slate-200 shadow-sm leading-relaxed">
+                            ${htmlContent}
+                        </div>
+                        <span class="text-[9px] text-slate-400 font-mono ml-1">${timeStr}</span>
+                    </div>
+                </div>
+            `;
+
+            const typingEl = document.getElementById('typing-indicator');
+            typingEl.insertAdjacentHTML('beforebegin', msgHtml);
+        }
+
+        function showTypingIndicator(show) {
+            const typingEl = document.getElementById('typing-indicator');
+            if (show) {
+                typingEl.classList.remove('hidden');
+            } else {
+                typingEl.classList.add('hidden');
+            }
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chat-messages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearChatMessages() {
+            const container = document.getElementById('chat-messages');
+            const defaultContent = `
+                <div class="text-center my-1.5">
+                    <span class="text-[10px] font-semibold bg-slate-200/80 text-slate-500 px-2.5 py-0.5 rounded-full font-mono">
+                        Sesi Percakapan Diperbarui
+                    </span>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <div class="w-7 h-7 rounded-full bg-emerald-700 text-amber-300 flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-sm font-bold">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="flex flex-col space-y-1 max-w-[84%]">
+                        <span class="text-[10px] font-semibold text-slate-500 ml-1">Bot Humas SMA Muhi</span>
+                        <div class="p-3 bg-white text-slate-800 text-xs rounded-2xl rounded-tl-xs border border-slate-200 shadow-sm leading-relaxed">
+                            Sesi telah dibersihkan. Silakan pilih topik pertanyaan populer di bawah atau ketik pertanyaan baru.
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const quickReplies = document.getElementById('quick-replies');
+            const typingIndicator = document.getElementById('typing-indicator');
+            
+            container.innerHTML = defaultContent;
+            container.appendChild(quickReplies);
+            container.appendChild(typingIndicator);
+        }
+
+        function resetChat() {
+            clearChatMessages();
+            isChatOpen = true;
+            renderChatState();
+        }
+
+        // Mode Switcher (Hi-Fi UI vs Wireframe Lo-Fi)
+        function setMode(mode) {
+            currentMode = mode;
+            const btnHifi = document.getElementById('btn-mode-hifi');
+            const btnLofi = document.getElementById('btn-mode-lofi');
+            const body = document.body;
+
+            if (mode === 'lofi') {
+                body.classList.add('wireframe-mode');
+                btnLofi.className = "px-3 py-1.5 rounded-lg font-semibold transition-all bg-slate-700 text-white shadow";
+                btnHifi.className = "px-3 py-1.5 rounded-lg font-semibold transition-all text-slate-400 hover:text-white";
+            } else {
+                body.classList.remove('wireframe-mode');
+                btnHifi.className = "px-3 py-1.5 rounded-lg font-semibold transition-all bg-emerald-600 text-white shadow";
+                btnLofi.className = "px-3 py-1.5 rounded-lg font-semibold transition-all text-slate-400 hover:text-white";
+            }
+        }
+
+        // Toggle Annotation Labels
+        function toggleAnnotations() {
+            showAnnotations = !showAnnotations;
+            const tags = document.querySelectorAll('.wf-tag');
+            const label = document.getElementById('label-annotation');
+
+            tags.forEach(tag => {
+                tag.style.display = showAnnotations ? 'inline-block' : 'none';
+            });
+
+            label.textContent = showAnnotations ? 'Sembunyikan Label Bagian' : 'Tampilkan Label Bagian';
+        }
+
+        // File Attachment Upload Mockup
+        function triggerFileAttachment() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.pdf,.png,.jpg,.jpeg';
+            fileInput.onchange = e => {
+                const file = e.target.files[0];
+                if (file) {
+                    appendUserMessage(`[Lampiran Dokumen]: ${file.name}`);
+                    showTypingIndicator(true);
+                    setTimeout(() => {
+                        showTypingIndicator(false);
+                        appendBotMessage(`Terima kasih! Berkas <b>${file.name}</b> berhasil diunggah dan diterima oleh Panitia PPDB SMA Muhammadiyah 1.`);
+                        scrollToBottom();
+                    }, 1000);
+                }
+            };
+            fileInput.click();
+        }
+
+        function insertEmoji(emoji) {
+            const input = document.getElementById('user-input');
+            input.value += emoji;
+            input.focus();
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;")
+                       .replace(/</g, "&lt;")
+                       .replace(/>/g, "&gt;")
+                       .replace(/"/g, "&quot;")
+                       .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
